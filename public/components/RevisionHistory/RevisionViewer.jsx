@@ -24,10 +24,15 @@ export default function RevisionViewer({ content, patches }) {
           EditorView.theme({
             "&": {
               height: "100%",
-              width: "100%"
+              width: "100%",
+              maxHeight: "500px"
             },
             ".cm-scroller": {
-              overflow: "auto"
+              overflow: "auto",
+              maxHeight: "100%"
+            },
+            ".cm-content": {
+              minHeight: "100%"
             }
           }),
           EditorState.readOnly.of(true)
