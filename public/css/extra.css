@@ -410,3 +410,34 @@ small .dropdown a:focus, small .dropdown a:hover {
         font-size: 12px !important;
     }
 }
+
+/* 自定义列表样式 */
+.markdown-body ol {
+    list-style-type: none;
+    counter-reset: item;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.markdown-body ol > li {
+    display: block;
+    position: relative;
+    padding-left: 2em;
+}
+
+.markdown-body ol > li:before {
+    content: counter(item) ")";
+    counter-increment: item;
+    /* position: absolute;
+    left: 0; */
+    margin-right: 0.5em;
+}
+
+.markdown-body ol ol {
+    counter-reset: subitem;
+}
+
+.markdown-body ol ol > li:before {
+    content: counter(subitem, lower-alpha) ")";
+    counter-increment: subitem;
+}
