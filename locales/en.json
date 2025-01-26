@@ -127,5 +127,7 @@
     "Private - Only owner can view & edit": "Private - Only owner can view & edit",
     "changed": "changed",
     "created": "created",
-    "Docx": "Docx"
+    "Docx": "Docx",
+    "COP-Tree": "COP-Tree",
+    "My": "My"
 }
