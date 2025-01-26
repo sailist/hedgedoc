@@ -49,7 +49,7 @@ function html2table(md) {
         const colTexts = Array.from(cols).map(th => th.textContent.trim());
         
         if (colTexts.length !== checklist_cols.length || !colTexts.every(col => checklist_cols.includes(col))) {
-            return table;
+            return {table, isChecklist: false};
         }
 
         // 1. 添加编号列
@@ -107,7 +107,7 @@ function html2table(md) {
             }
         });
 
-        return table;
+        return {table, isChecklist: true};
     }
 
     function processHtmlBlockTokens(state) {
@@ -124,20 +124,23 @@ function html2table(md) {
             // 解析 HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(token.content, 'text/html');
-            const table = doc.querySelector('table');
-            if (!table) {
+            const _table = doc.querySelector('table');
+            if (!_table) {
                 i++;
                 continue;
             }
 
             // 处理 checklist 表格
-            trimChecklistIfTableIsChecklist(table);
-
+            const {table, isChecklist} = trimChecklistIfTableIsChecklist(_table);
+            
             // 创建 TokenBuilder
             const builder = new TokenBuilder();
 
             // table open
             const head = builder.push('table_open', 'table', 1);
+            if (isChecklist) {
+                head.attrJoin('class', 'checklist');
+            }
 
             // 处理表头
             const thead = table.querySelector('thead') || table.querySelector('tr');

@@ -448,3 +448,8 @@ small .dropdown a:focus, small .dropdown a:hover {
     content: counter(subitem, lower-alpha) ")";
     counter-increment: subitem;
 }
+
+
+.checklist > thead tr th {
+    background-color: #bdd6ee !important;
+}
