@@ -683,6 +683,14 @@ export function exportToRawHTML (view) {
   saveAs(blob, filename, true)
 }
 
+export function exportToDocx (markdown) {
+  const filename = `${renderFilename(ui.area.markdown)}.docx`
+
+  // TODO: request or redirect to docx generate server
+  debugger;
+  saveAs(blob, filename, true)
+}
+
 // extract markdown body to html and compile to template
 export function exportToHTML (view) {
   const title = renderTitle(ui.area.markdown)

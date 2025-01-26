@@ -44,6 +44,7 @@ import {
   autoLinkify,
   deduplicatedHeaderId,
   exportToHTML,
+  exportToDocx,
   exportToRawHTML,
   removeDOMEvents,
   finishView,
@@ -1227,6 +1228,14 @@ ui.toolbar.download.rawhtml.click(function (e) {
   e.stopPropagation()
   exportToRawHTML(ui.area.markdown)
 })
+// docx
+ui.toolbar.download.docx.click(function (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  const markdown = editor.getValue()
+  exportToDocx(markdown)
+})
+
 // export to dropbox
 ui.toolbar.export.dropbox.click(function (event) {
   event.preventDefault()
