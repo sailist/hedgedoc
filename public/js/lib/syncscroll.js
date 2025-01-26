@@ -3,6 +3,7 @@
 // Inject line numbers for sync scroll.
 
 import markdownitContainer from 'markdown-it-container'
+import { render_heading_open } from '../md_plugins/cop_md/title'
 
 import { md } from '../extra'
 import modeType from './modeType'
@@ -31,6 +32,9 @@ md.renderer.rules.bullet_list_open = function (tokens, idx, options, env, self) 
   addPart(tokens, idx)
   return self.renderToken(...arguments)
 }
+
+
+
 md.renderer.rules.list_item_open = function (tokens, idx, options, env, self) {
   tokens[idx].attrJoin('class', 'raw')
   if (tokens[idx].map) {
@@ -56,7 +60,7 @@ md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
 md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
   tokens[idx].attrJoin('class', 'raw')
   addPart(tokens, idx)
-  return self.renderToken(...arguments)
+  return render_heading_open(tokens, idx, options, env, self)
 }
 md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   const token = tokens[idx]
