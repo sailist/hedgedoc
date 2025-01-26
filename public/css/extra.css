@@ -433,6 +433,13 @@ small .dropdown a:focus, small .dropdown a:hover {
     margin-right: 0.5em;
 }
 
+.markdown-body ol > li.empty::before {
+    /* display: block; */
+    /* position: relative; */
+    margin-right: 0.5em;
+    content: " ";
+}
+
 .markdown-body ol ol {
     counter-reset: subitem;
 }

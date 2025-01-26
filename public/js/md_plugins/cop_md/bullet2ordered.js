@@ -9,13 +9,20 @@ function bullet2orderedPlugin(md) {
                 // 将 bullet_list 转换为 ordered_list
                 token.type = 'ordered_list_open';
                 token.tag = 'ol';
-                // 查找对应的 close token 并转换
-                for (let i = idx + 1; i < state.tokens.length; i++) {
-                    if (state.tokens[i].type === 'bullet_list_close') {
-                        state.tokens[i].type = 'ordered_list_close';
-                        state.tokens[i].tag = 'ol';
-                        break;
-                    }
+            } else if (token.type === 'bullet_list_close') {
+                token.type = 'ordered_list_close';
+                token.tag = 'ol';
+            }
+        });
+
+        state.tokens.forEach((token, idx, array) => {
+            if (token.type === 'list_item_open') {
+                // 将 bullet_list 转换为 ordered_list
+                if (array[idx + 1].type !== 'paragraph_open') {
+                    // debugger;
+                    token.attrJoin('class', 'empty');
+                    // token.tag = 'span';
+                    // token.attrSet('test', 'empty');
                 }
             }
         });
