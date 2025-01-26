@@ -9,7 +9,6 @@ function bullet2orderedPlugin(md) {
                 // 将 bullet_list 转换为 ordered_list
                 token.type = 'ordered_list_open';
                 token.tag = 'ol';
-                // debugger;
                 // 查找对应的 close token 并转换
                 for (let i = idx + 1; i < state.tokens.length; i++) {
                     if (state.tokens[i].type === 'bullet_list_close') {

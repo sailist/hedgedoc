@@ -47,7 +47,7 @@ window.lastchangeui = {
 
 const ownerui = $('.ui-owner')
 
-export function updateLastChange () {
+export function updateLastChange() {
   if (!window.lastchangeui) return
   if (window.createtime) {
     if (window.createtime && !window.lastchangetime) {
@@ -67,7 +67,7 @@ setInterval(updateLastChange, 60000)
 window.lastchangeuser = null
 window.lastchangeuserprofile = null
 
-export function updateLastChangeUser () {
+export function updateLastChangeUser() {
   if (window.lastchangeui) {
     if (window.lastchangeuser && window.lastchangeuserprofile) {
       const icon = window.lastchangeui.user.children('i')
@@ -85,7 +85,7 @@ export function updateLastChangeUser () {
 window.owner = null
 window.ownerprofile = null
 
-export function updateOwner () {
+export function updateOwner() {
   if (ownerui) {
     if (window.owner && window.ownerprofile && window.owner !== window.lastchangeuser) {
       const icon = ownerui.children('i')
@@ -100,7 +100,7 @@ export function updateOwner () {
 }
 
 // get title
-function getTitle (view) {
+function getTitle(view) {
   let title = ''
   if (md && md.meta && md.meta.title && (typeof md.meta.title === 'string' || typeof md.meta.title === 'number')) {
     title = md.meta.title
@@ -116,7 +116,7 @@ function getTitle (view) {
 }
 
 // render title
-export function renderTitle (view) {
+export function renderTitle(view) {
   let title = getTitle(view)
   if (title) {
     title += ' - HedgeDoc'
@@ -127,7 +127,7 @@ export function renderTitle (view) {
 }
 
 // render filename
-export function renderFilename (view) {
+export function renderFilename(view) {
   let filename = getTitle(view)
   if (!filename) {
     filename = 'Untitled'
@@ -136,7 +136,7 @@ export function renderFilename (view) {
 }
 
 // render tags
-export function renderTags (view) {
+export function renderTags(view) {
   const tags = []
   const rawtags = []
   if (md && md.meta && md.meta.tags && (typeof md.meta.tags === 'string' || typeof md.meta.tags === 'number')) {
@@ -169,7 +169,7 @@ export function renderTags (view) {
   return tags
 }
 
-function slugifyWithUTF8 (text) {
+function slugifyWithUTF8(text) {
   // remove HTML tags and trim spaces
   let newText = S(text).trim().stripTags().s
   // replace space between words with dashes
@@ -179,7 +179,7 @@ function slugifyWithUTF8 (text) {
   return newText
 }
 
-export function isValidURL (str) {
+export function isValidURL(str) {
   try {
     const url = new URL(str)
     return ['http:', 'https:'].includes(url.protocol)
@@ -189,7 +189,7 @@ export function isValidURL (str) {
 }
 
 // parse meta
-export function parseMeta (md, edit, view, toc, tocAffix) {
+export function parseMeta(md, edit, view, toc, tocAffix) {
   let lang = null
   let dir = null
   let breaks = true
@@ -242,7 +242,7 @@ const nameandtimeregex = new RegExp(nameregex.source + spaceregex.source + timer
 nameregex = new RegExp(nameregex.source + notinhtmltagregex.source, 'g')
 timeregex = new RegExp(timeregex.source + notinhtmltagregex.source, 'g')
 
-function replaceExtraTags (html) {
+function replaceExtraTags(html) {
   html = html.replace(coloregex, '<span class="color" data-color="$1"></span>')
   html = html.replace(nameandtimeregex, '<small><i class="fa fa-user"></i> $1 <i class="fa fa-clock-o"></i> $2</small>')
   html = html.replace(nameregex, '<small><i class="fa fa-user"></i> $1</small>')
@@ -251,7 +251,7 @@ function replaceExtraTags (html) {
 }
 
 // dynamic event or object binding here
-export function finishView (view) {
+export function finishView(view) {
   // todo list
   const lis = view.find('li.raw').removeClass('raw').sortByDepth().toArray()
 
@@ -288,7 +288,7 @@ export function finishView (view) {
     .click(function () {
       imgPlayiframe(this, 'https://www.youtube.com/embed/')
     })
-    // vimeo
+  // vimeo
   view.find('div.vimeo.raw').removeClass('raw')
     .click(function () {
       imgPlayiframe(this, 'https://player.vimeo.com/video/')
@@ -300,14 +300,14 @@ export function finishView (view) {
         url: `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(vimeoLink)}`,
         jsonp: 'callback',
         dataType: 'jsonp',
-        success (data) {
+        success(data) {
           const image = `<img src="${data.thumbnail_url}" />`
           $(value).prepend(image)
           if (window.viewAjaxCallback) window.viewAjaxCallback()
         }
       })
     })
-    // gist
+  // gist
   view.find('code[data-gist-id]').each((key, value) => {
     if ($(value).children().length === 0) { $(value).gist(window.viewAjaxCallback) }
   })
@@ -458,7 +458,7 @@ export function finishView (view) {
         url: `https://www.slideshare.net/api/oembed/2?url=https://www.slideshare.net/${$(value).attr('data-slideshareid')}&format=json`,
         jsonp: 'callback',
         dataType: 'jsonp',
-        success (data) {
+        success(data) {
           const $html = $(data.html)
           const iframe = $html.closest('iframe')
           const caption = $html.closest('div')
@@ -472,7 +472,7 @@ export function finishView (view) {
         }
       })
     })
-    // speakerdeck
+  // speakerdeck
   view.find('div.speakerdeck.raw').removeClass('raw')
     .each((key, value) => {
       const url = `https://speakerdeck.com/${$(value).attr('data-speakerdeckid')}`
@@ -482,7 +482,7 @@ export function finishView (view) {
       inner.attr('target', '_blank')
       $(value).append(inner)
     })
-    // pdf
+  // pdf
   view.find('div.pdf.raw').removeClass('raw')
     .each(function (key, value) {
       const url = $(value).attr('data-pdfurl')
@@ -492,7 +492,7 @@ export function finishView (view) {
         height: '400px'
       })
     })
-    // syntax highlighting
+  // syntax highlighting
   view.find('code.raw').removeClass('raw')
     .each((key, value) => {
       const langDiv = $(value)
@@ -544,7 +544,7 @@ export function finishView (view) {
         else langDiv.html(result.value)
       }
     })
-    // mathjax
+  // mathjax
   const mathjaxdivs = view.find('span.mathjax.raw').removeClass('raw').toArray()
   try {
     if (mathjaxdivs.length > 1) {
@@ -562,7 +562,7 @@ export function finishView (view) {
 }
 
 // only static transform should be here
-export function postProcess (code) {
+export function postProcess(code) {
   const result = $(`<div>${code}</div>`)
   // process style tags
   result.find('style').each((key, value) => {
@@ -615,14 +615,14 @@ const domevents = Object.getOwnPropertyNames(document).concat(Object.getOwnPrope
   return self.indexOf(elem) === pos
 })
 
-export function removeDOMEvents (view) {
+export function removeDOMEvents(view) {
   for (let i = 0, l = domevents.length; i < l; i++) {
     view.find('[' + domevents[i] + ']').removeAttr(domevents[i])
   }
 }
 window.removeDOMEvents = removeDOMEvents
 
-function toDataURL (url, callback) {
+function toDataURL(url, callback) {
   fetch(url).then(response => {
     const fr = new FileReader()
     fr.onload = function () {
@@ -634,7 +634,7 @@ function toDataURL (url, callback) {
   })
 }
 
-function generateCleanHTML (view) {
+function generateCleanHTML(view) {
   const src = view.clone()
   const eles = src.find('*')
   // remove syncscroll parts
@@ -672,7 +672,7 @@ function generateCleanHTML (view) {
   return src
 }
 
-export function exportToRawHTML (view) {
+export function exportToRawHTML(view) {
   const filename = `${renderFilename(ui.area.markdown)}.html`
   const src = generateCleanHTML(view)
   $(src).find('a.anchor').remove()
@@ -683,7 +683,7 @@ export function exportToRawHTML (view) {
   saveAs(blob, filename, true)
 }
 
-export function exportToDocx (markdown) {
+export function exportToDocx(markdown) {
   const filename = `${renderFilename(ui.area.markdown)}.docx`
 
   // TODO: request or redirect to docx generate server
@@ -692,7 +692,7 @@ export function exportToDocx (markdown) {
 }
 
 // extract markdown body to html and compile to template
-export function exportToHTML (view) {
+export function exportToHTML(view) {
   const title = renderTitle(ui.area.markdown)
   const filename = `${renderFilename(ui.area.markdown)}.html`
   const src = generateCleanHTML(view)
@@ -735,7 +735,7 @@ $.fn.sortByDepth = function () {
   return $(result)
 }
 
-function toggleTodoEvent (e) {
+function toggleTodoEvent(e) {
   const startline = $(this).closest('li').attr('data-startline') - 1
   const line = window.editor.getLine(startline)
   const matches = line.match(/^[>\s-]*(?:[-+*]|\d+[.)])\s\[([xX ])]/)
@@ -754,13 +754,13 @@ function toggleTodoEvent (e) {
 }
 
 // remove hash
-function removeHash () {
+function removeHash() {
   history.pushState('', document.title, window.location.pathname + window.location.search)
 }
 
 let tocExpand = false
 
-function checkExpandToggle () {
+function checkExpandToggle() {
   const toc = $('.ui-toc-dropdown .toc')
   const toggle = $('.expand-toggle')
   if (!tocExpand) {
@@ -773,7 +773,7 @@ function checkExpandToggle () {
 }
 
 // toc
-export function generateToc (id) {
+export function generateToc(id) {
   const target = $(`#${id}`)
   target.html('')
   /* eslint-disable no-unused-vars */
@@ -815,7 +815,7 @@ export function generateToc (id) {
 }
 
 // smooth all hash trigger scrolling
-export function smoothHashScroll () {
+export function smoothHashScroll() {
   const hashElements = $("a[href^='#']:not([smoothhashscroll])").toArray()
 
   for (const element of hashElements) {
@@ -845,7 +845,7 @@ export function smoothHashScroll () {
   }
 }
 
-function imgPlayiframe (element, src) {
+function imgPlayiframe(element, src) {
   if (!$(element).attr('data-videoid')) return
   const iframe = $("<iframe frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>")
   $(iframe).attr('src', `${src + $(element).attr('data-videoid')}?autoplay=1`)
@@ -909,7 +909,7 @@ const linkifyAnchors = (level, containingElement) => {
   }
 }
 
-export function autoLinkify (view) {
+export function autoLinkify(view) {
   const contentBlock = view[0]
   if (!contentBlock) {
     return
@@ -919,21 +919,21 @@ export function autoLinkify (view) {
   }
 }
 
-function getHeaderContent (header) {
+function getHeaderContent(header) {
   const headerHTML = $(header).clone()
   headerHTML.find('.MathJax_Preview').remove()
   headerHTML.find('.MathJax').remove()
   return headerHTML[0].innerHTML
 }
 
-function changeHeaderId ($header, id, newId) {
+function changeHeaderId($header, id, newId) {
   $header.attr('id', newId)
   const $headerLink = $header.find(`> a.anchor[href="#${id}"]`)
   $headerLink.attr('href', `#${newId}`)
   $headerLink.attr('title', newId)
 }
 
-export function deduplicatedHeaderId (view) {
+export function deduplicatedHeaderId(view) {
   // headers contained in the last change
   const headers = view.find(':header.raw').removeClass('raw').toArray()
   if (headers.length === 0) {
@@ -968,7 +968,7 @@ export function deduplicatedHeaderId (view) {
   }
 }
 
-export function renderTOC (view) {
+export function renderTOC(view) {
   const tocs = view.find('.toc').toArray()
   for (let i = 0; i < tocs.length; i++) {
     const toc = $(tocs[i])
@@ -990,13 +990,13 @@ export function renderTOC (view) {
   }
 }
 
-export function scrollToHash () {
+export function scrollToHash() {
   const hash = location.hash
   location.hash = ''
   location.hash = hash
 }
 
-function highlightRender (code, lang) {
+function highlightRender(code, lang) {
   if (!lang || /no(-?)highlight|plain|text/.test(lang)) { return }
   code = S(code).escapeHTML().s
   if (lang === 'sequence') {
@@ -1072,7 +1072,7 @@ window.emojify.setConfig({
 
 md.renderer.rules.emoji = (token, idx) => window.emojify.replace(`:${token[idx].markup}:`)
 
-function renderContainer (tokens, idx, options, env, self) {
+function renderContainer(tokens, idx, options, env, self) {
   tokens[idx].attrJoin('role', 'alert')
   tokens[idx].attrJoin('class', 'alert')
   tokens[idx].attrJoin('class', `alert-${tokens[idx].info.trim()}`)
@@ -1230,13 +1230,13 @@ const emojijsPlugin = new Plugin(
 )
 
 // yaml meta, from https://github.com/eugeneware/remarkable-meta
-function get (state, line) {
+function get(state, line) {
   const pos = state.bMarks[line]
   const max = state.eMarks[line]
   return state.src.substr(pos, max - pos)
 }
 
-function meta (state, start, end, silent) {
+function meta(state, start, end, silent) {
   if (start !== 0 || state.blkIndent !== 0) return false
   if (state.tShift[start] < 0) return false
   if (!get(state, start).match(/^---$/)) return false
@@ -1266,7 +1266,7 @@ function meta (state, start, end, silent) {
   return true
 }
 
-function metaPlugin (md) {
+function metaPlugin(md) {
   md.meta = md.meta || {}
   md.block.ruler.before('code', 'meta', meta, {
     alt: []
@@ -1284,7 +1284,6 @@ md.use(speakerdeckPlugin)
 md.use(pdfPlugin)
 
 md.use(highlightPlugin)
-
 md.use(bullet2orderedPlugin)
 
 export default {
