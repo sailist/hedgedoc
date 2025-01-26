@@ -17,6 +17,7 @@ import markdownitContainer from 'markdown-it-container'
 import Plugin from 'markdown-it-regexp'
 
 import 'gist-embed'
+import highlightPlugin from './md_plugins/common/highlight'
 
 require('prismjs/themes/prism.css')
 require('prismjs/components/prism-wiki')
@@ -1272,6 +1273,9 @@ md.use(tocPlugin)
 md.use(slidesharePlugin)
 md.use(speakerdeckPlugin)
 md.use(pdfPlugin)
+
+md.use(highlightPlugin)
+
 
 export default {
   md
