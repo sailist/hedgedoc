@@ -289,7 +289,7 @@ module.exports = {
 
   resolve: {
     modules: ['node_modules'],
-    extensions: ['.js'],
+    extensions: ['.js', ".jsx"],
     alias: {
       'bootstrap-tooltip': path.join(__dirname, 'public/vendor/bootstrap/tooltip.min.js'),
       'reveal-markdown': path.join(__dirname, 'public/js/reveal-markdown.js'),
@@ -312,6 +312,16 @@ module.exports = {
           loader: 'imports-loader',
           options: {
             imports: ['default @hedgedoc/codemirror-5 CodeMirror']
+          }
+        }
+      },
+      {
+        test: /\.(jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react']
           }
         }
       },

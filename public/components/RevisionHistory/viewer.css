@@ -1,0 +1,14 @@
+.revision-viewer {
+    height: 100%;
+    border: 1px solid #ddd;
+}
+
+.insertion {
+    background-color: rgba(230, 255, 230, 0.7);
+    text-decoration: underline;
+}
+
+.deletion {
+    background-color: rgba(255, 230, 230, 0.7);
+    text-decoration: line-through;
+}

@@ -1,12 +1,11 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "browsers": "defaults"
-      }
-    }]
+    "@babel/preset-react",
+    [
+      "@babel/preset-env"
+    ],
   ],
   "plugins": [
-    "transform-runtime"
+    "@babel/plugin-transform-runtime"
   ]
 }

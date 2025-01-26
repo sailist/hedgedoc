@@ -10,6 +10,9 @@ import 'jquery-ui/ui/widgets/resizable'
 import 'jquery-ui/themes/base/resizable.css'
 
 import Idle from 'Idle.Js'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import RevisionHistory from '../components/RevisionHistory/index.jsx'
 
 import '../vendor/jquery-textcomplete/jquery.textcomplete'
 
@@ -1410,21 +1413,18 @@ const revisionList = ui.modal.revision.find('.ui-revision-list')
 let revision = null
 let revisionTime = null
 ui.modal.revision.on('show.bs.modal', function (e) {
-  $.get(noteurl + '/revision')
-    .done(function (data) {
-      parseRevisions(data.revision)
-      initRevisionViewer()
-    })
-    .fail(function (err) {
-      if (debug) {
-        // eslint-disable-next-line no-console
-        console.debug(err)
-      }
-    })
-    .always(function () {
-      // na
-    })
-})
+  // debugger;
+  const container = document.getElementById('revisionContainer');
+  
+  // 使用 createRoot API 替代 render
+  const root = createRoot(container);
+  const element = React.createElement(RevisionHistory, {
+    noteUrl: noteurl,
+    onClose: () => ui.modal.revision.modal('hide')
+  });
+  
+  root.render(element);
+});
 function checkRevisionViewer () {
   if (revisionViewer) {
     const container = $(revisionViewer.display.wrapper).parent()
