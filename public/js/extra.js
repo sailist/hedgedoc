@@ -759,7 +759,7 @@ function removeHash() {
   history.pushState('', document.title, window.location.pathname + window.location.search)
 }
 
-let tocExpand = false
+let tocExpand = true
 
 function checkExpandToggle() {
   const toc = $('.ui-toc-dropdown .toc')
@@ -789,7 +789,7 @@ export function generateToc(id) {
   /* eslint-enable no-unused-vars */
   if (target.text() === 'undefined') { target.html('') }
   const tocMenu = $('<div class="toc-menu"></div')
-  const toggle = $('<a class="expand-toggle" href="#">Expand all</a>')
+  const toggle = $('<a class="expand-toggle" href="#">Collapse all</a>')
   const backtotop = $('<a class="back-to-top" href="#">Back to top</a>')
   const gotobottom = $('<a class="go-to-bottom" href="#">Go to bottom</a>')
   checkExpandToggle()
