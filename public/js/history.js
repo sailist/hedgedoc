@@ -276,7 +276,7 @@ function parseToHistory (list, notehistory, callback) {
       notehistory[i].fromNow = timestamp.fromNow()
       notehistory[i].time = timestamp.format('llll')
       // prevent XSS
-      notehistory[i].text = S(notehistory[i].text).escapeHTML().s
+      notehistory[i].title = S(notehistory[i].text || notehistory[i].title).escapeHTML().s
       notehistory[i].tags = (notehistory[i].tags && notehistory[i].tags.length > 0) ? S(notehistory[i].tags).escapeHTML().s.split(',') : []
       // add to list
       if (notehistory[i].id && list.get('id', notehistory[i].id).length === 0) { list.add(notehistory[i]) }

@@ -35,7 +35,10 @@ require('../css/site.css')
 require('./fix-aria-hidden-for-modals')
 
 const options = {
-  valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],
+  valueNames: ['id', 'title', 'timestamp', 'fromNow', 'time', 'tags', 'pinned',
+    "cop",
+    'file_id', 'parent_file_id', 'major_version', 'minor_version', 'patch_version'
+  ],
   item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
           <span class="id" style="display:none;"></span>
           <a href="#">
@@ -43,8 +46,14 @@ const options = {
               <div class="ui-history-pin fa fa-thumb-tack fa-fw"></div>
               <div class="ui-history-close fa fa-close fa-fw" data-toggle="modal" data-target=".delete-history-modal"></div>
               <div class="content">
-                <h4 class="text"></h4>
+                <h4 class="title"></h4>
+                <p class="version">
+                  <span class="major_version"></span>.
+                  <span class="minor_version"></span>.
+                  <span class="patch_version"></span>
+                </p>
                 <p>
+                  <span class="file_id"></span> ·
                   <i><i class="fa fa-clock-o"></i> visited </i><i class="fromNow"></i>
                   <br>
                   <i class="timestamp" style="display:none;"></i>
