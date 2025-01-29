@@ -699,13 +699,21 @@ export function exportToDocx(markdown) {
       markdown: markdown
     })
   })
-    .then(response => response.blob())
+    .then(response => {
+      if (response.status !== 200) {
+        return response.text().then(errorText => {
+          throw new Error(errorText || 'Failed to convert document')
+        })
+      }
+      return response.blob()
+    })
     .then(blob => {
       saveAs(blob, filename, true)
     })
     .catch(error => {
       console.error('Error converting to DOCX:', error)
-      // 可以添加错误提示UI
+      // 添加友好的错误提示
+      alert('转换文档失败: ' + error.message)
     })
 }
 
