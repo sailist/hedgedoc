@@ -307,6 +307,14 @@
     font-family: "Source Sans Pro", Helvetica, Arial, "Microsoft YaHei UI", "微软雅黑UI", sans-serif;
 }
 
+.ui-toc-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #777;
+    padding: 4px 20px;
+    border-bottom: 1px solid #ccc;
+}
+
 .ui-affix-toc {
     position: fixed;
     top: 0;

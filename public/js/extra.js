@@ -790,6 +790,11 @@ function checkExpandToggle() {
   }
 }
 
+export function generateTocTitle(title, id) {
+  const target = $(`#${id}`)
+  target.html(title)
+}
+
 // toc
 export function generateToc(id) {
   const target = $(`#${id}`)

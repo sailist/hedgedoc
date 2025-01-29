@@ -39,11 +39,20 @@
                 <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
                     <i class="fa fa-bars"></i>
                 </a>
-                <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+                <ul class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+                    <div id="ui-toc-title">
+                        <%= title %>
+                    </div>
+                    <div id="ui-toc"></div>
                 </ul>
             </div>
         </div>
-        <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="top:51px;display:none;"></div>
+        <div class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="top:51px;display:none;">
+            <div id="ui-toc-title-affix">
+                <%= title %>
+            </div>
+            <div id="ui-toc-affix"></div>
+        </div>
     </div>
 </div>
 <!-- clipboard modal -->

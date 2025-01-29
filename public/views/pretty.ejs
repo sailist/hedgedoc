@@ -64,11 +64,20 @@
             <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
                 <i class="fa fa-bars"></i>
             </a>
-            <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+            <ul class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+                <div class="ui-toc-title">
+                    <%= title %>
+                </div>
+                <div id="ui-toc"></div>
             </ul>
         </div>
     </div>
-    <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="display:none;"></div>
+    <div class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="display:none;">
+        <div class="ui-toc-title ">
+            <%= title %>
+        </div>
+        <div id="ui-toc-affix"></div>
+    </div>
     <% if(typeof disqus !== 'undefined' && disqus && !dnt) { %>
     <div class="container-fluid" style="max-width: 758px; margin-bottom: 40px;">
         <%- include('shared/disqus') %>

@@ -52,6 +52,7 @@ import {
   removeDOMEvents,
   finishView,
   generateToc,
+  generateTocTitle,
   isValidURL,
   md,
   parseMeta,
@@ -3505,6 +3506,10 @@ function updateViewInner () {
     }
     lastResult = $(result).clone()
   }
+  let title = md.meta.title
+  if (md.meta.cop) {
+    title = `${title}-v${md.meta.major_version || 1}.${md.meta.minor_version || 0}.${md.meta.patch_version || 0}`
+  }
   removeDOMEvents(ui.area.markdown)
   finishView(ui.area.markdown)
   autoLinkify(ui.area.markdown)
@@ -3512,6 +3517,8 @@ function updateViewInner () {
   renderTOC(ui.area.markdown)
   generateToc('ui-toc')
   generateToc('ui-toc-affix')
+  generateTocTitle(title, 'ui-toc-title')
+  generateTocTitle(title, 'ui-toc-title-affix')
   autoLinkify(ui.area.markdown)
   generateScrollspy()
   updateScrollspy()
