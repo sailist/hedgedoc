@@ -38,6 +38,10 @@ function render_heading_open(tokens, idx, options, env, self) {
     if (!md.meta.cop) {
         return self.renderToken(...arguments);
     }
+    
+    if (token.attrGet('no_number')) {
+        return self.renderToken(...arguments);
+    }
 
     // 处理一级标题
     if (token.markup === '#') {
@@ -55,6 +59,7 @@ function render_heading_open(tokens, idx, options, env, self) {
 
     // debugger;
     // 获取标题前缀模板
+    
     let head = levelMap[token.markup];
 
     // // 特殊处理三级标题

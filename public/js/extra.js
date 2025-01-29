@@ -20,6 +20,7 @@ import 'gist-embed'
 import highlightPlugin from './md_plugins/common/highlight'
 import bullet2orderedPlugin from './md_plugins/cop_md/bullet2ordered'
 import { markdownTableAlign, html2table } from './md_plugins/common/htmltable'
+import fenceTablePlugin from './md_plugins/common/fencetable'
 
 require('prismjs/themes/prism.css')
 require('prismjs/components/prism-wiki')
@@ -1289,6 +1290,7 @@ md.use(bullet2orderedPlugin)
 
 md.use(html2table)
 md.use(markdownTableAlign)
+md.use(fenceTablePlugin)
 
 export default {
   md
