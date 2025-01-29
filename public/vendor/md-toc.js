@@ -28,6 +28,8 @@
   Toc.prototype._collectTitleElements = function () {
     this._elTitlesNames = []
     this.elTitleElements = []
+    this.tableTitleElements = []
+    
     for (var i = 1; i < 6; i++) {
       if (this.el.getElementsByTagName('h' + i).length) {
         this._elTitlesNames.push('h' + i)
@@ -41,6 +43,11 @@
       if (this._elTitlesNames.toString().match(this._elChildName)) {
         this.elTitleElements.push(this.elChilds[j])
       }
+    }
+
+    var tables = this.el.getElementsByTagName('table')
+    for (var k = 0; k < tables.length; k++) {
+      this.tableTitleElements.push(tables[k])
     }
   }
 
@@ -109,6 +116,28 @@
     if (openTag) {
       content += '</li>\n'
     }
+
+    // 在第一层级的最后添加 Tables 部分
+    if (level === 0 && this.tableTitleElements && this.tableTitleElements.length > 0) {
+      if (openTag) {
+        content += '</li>\n'
+      }
+      content += '<li>Tables<ul>\n'
+      
+      // 添加所有表格作为二级目录
+      for (var i = 0; i < this.tableTitleElements.length; i++) {
+        var table = this.tableTitleElements[i]
+        var tableId = table.getAttribute('id')
+        if (!tableId) {
+          table.setAttribute('id', 'table' + (i + 1))
+          tableId = 'table' + (i + 1)
+        }
+        content += '<li><a href="#' + tableId + '">Table ' + (i + 1) + '</a></li>\n'
+      }
+      
+      content += '</ul></li>\n'
+    }
+
     content += '</ul>\n'
 
     // Set ToC content of the level 0 everything else pass things to the upper level!
