@@ -107,6 +107,9 @@ function getTitle(view) {
   let title = ''
   if (md && md.meta && md.meta.title && (typeof md.meta.title === 'string' || typeof md.meta.title === 'number')) {
     title = md.meta.title
+    if (md.meta.cop) {
+      title = `${title}-v${md.meta.major_version || 1}.${md.meta.minor_version || 0}.${md.meta.patch_version || 0}`
+    }
   } else {
     const h1s = view.find('h1')
     if (h1s.length > 0) {
@@ -121,11 +124,10 @@ function getTitle(view) {
 // render title
 export function renderTitle(view) {
   let title = getTitle(view)
-  if (title) {
-    title += ' - HedgeDoc'
-  } else {
+  if (!title) {
     title = 'HedgeDoc - Collaborative markdown notes'
   }
+
   return title
 }
 
@@ -688,10 +690,23 @@ export function exportToRawHTML(view) {
 
 export function exportToDocx(markdown) {
   const filename = `${renderFilename(ui.area.markdown)}.docx`
-
-  // TODO: request or redirect to docx generate server
-  debugger;
-  saveAs(blob, filename, true)
+  fetch('/convert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      markdown: markdown
+    })
+  })
+    .then(response => response.blob())
+    .then(blob => {
+      saveAs(blob, filename, true)
+    })
+    .catch(error => {
+      console.error('Error converting to DOCX:', error)
+      // 可以添加错误提示UI
+    })
 }
 
 // extract markdown body to html and compile to template
