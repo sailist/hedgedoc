@@ -709,6 +709,94 @@ export function exportToDocx(markdown) {
     })
 }
 
+export function exportToChecklist(view) {
+  const filename = `${renderFilename(ui.area.markdown)}-checklist.html`
+  const src = generateCleanHTML(view)
+
+  // 创建完整的 HTML 结构
+  const htmlTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Checklist Export</title>
+  <style>
+    /* 基础样式 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+    }
+    
+        
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
+}
+
+.markdown-body table th {
+  font-weight: bold
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+.night .markdown-body table tr {
+  background-color: #5f5f5f;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.night .markdown-body table tr:nth-child(2n){
+
+  background-color: #4f4f4f;
+}
+    .checklist > thead tr th {
+        background-color: #bdd6ee !important;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="markdown-body checklist-export">
+    ${src.find('.checklist').map(function () {
+    return $(this).clone().wrap('<div/>').parent().html();
+  }).get().join('\n') || ''}
+  </div>
+</body>
+</html>`
+
+  // 生成 HTML blob
+  const blob = new Blob([htmlTemplate], {
+    type: 'text/html;charset=utf-8'
+  })
+
+  // 保存文件
+  saveAs(blob, filename, true)
+}
+
 // extract markdown body to html and compile to template
 export function exportToHTML(view) {
   const title = renderTitle(ui.area.markdown)

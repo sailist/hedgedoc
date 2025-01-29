@@ -49,6 +49,7 @@ import {
   exportToHTML,
   exportToDocx,
   exportToRawHTML,
+  exportToChecklist,
   removeDOMEvents,
   finishView,
   generateToc,
@@ -1231,6 +1232,12 @@ ui.toolbar.download.rawhtml.click(function (e) {
   e.preventDefault()
   e.stopPropagation()
   exportToRawHTML(ui.area.markdown)
+})
+// checklist
+ui.toolbar.download.checklist.click(function (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  exportToChecklist(ui.area.markdown)
 })
 // docx
 ui.toolbar.download.docx.click(function (e) {
