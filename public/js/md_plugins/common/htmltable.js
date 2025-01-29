@@ -1,5 +1,5 @@
 import Token from "markdown-it/lib/token"
-
+import { makeid } from "./utils";
 class TokenBuilder {
     constructor() {
         this.level = 0;
@@ -27,17 +27,7 @@ class TokenBuilder {
     }
 }
 
-function makeid(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        counter += 1;
-    }
-    return result;
-}
+
 
 const checklist_cols = ["Cat.", "Check 项目", "Check 方法", "参考值", "Check 结果", "PR & 时间"];
 
