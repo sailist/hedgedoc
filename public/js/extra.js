@@ -15,7 +15,7 @@ import markdownitContainer from 'markdown-it-container'
 
 /* Defined regex markdown it plugins */
 import Plugin from 'markdown-it-regexp'
-
+import { render_heading_open } from './md_plugins/cop_md/title'
 import 'gist-embed'
 import highlightPlugin from './md_plugins/common/highlight'
 import bullet2orderedPlugin from './md_plugins/cop_md/bullet2ordered'
@@ -1217,7 +1217,7 @@ md.renderer.rules.blockquote_open = function (tokens, idx, options, env, self) {
 }
 md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
   tokens[idx].attrJoin('class', 'raw')
-  return self.renderToken(...arguments)
+  return render_heading_open(...arguments)
 }
 md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   const token = tokens[idx]
@@ -1408,7 +1408,6 @@ md.use(bullet2orderedPlugin)
 md.use(html2table)
 md.use(markdownTableAlign)
 md.use(fenceTablePlugin)
-md.use(titlePlugin)
 
 export default {
   md

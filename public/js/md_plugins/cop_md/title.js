@@ -53,11 +53,8 @@ function render_heading_open(tokens, idx, options, env, self) {
     const counter = env.titleCount;
     const level = token.markup.length;
 
-
-
     counter[level]++;
 
-    // debugger;
     // 获取标题前缀模板
     
     let head = levelMap[token.markup];
@@ -74,7 +71,8 @@ function render_heading_open(tokens, idx, options, env, self) {
         head = head.replace('{count}', counter[level]);
     }
 
-    return `<h${level}>${head} `;
+    const attrs = self.renderAttrs(token)
+    return `<h${level} ${attrs}>${head} `;
 };
 
 function titlePlugin(md) {

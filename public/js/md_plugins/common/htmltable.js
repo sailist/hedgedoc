@@ -128,6 +128,13 @@ function html2table(md) {
 
             // table open
             const head = builder.push('table_open', 'table', 1);
+            if (head.attrs) {
+                for (const attr of head.attrs) {
+                    head.attrSet(attr[0], attr[1])
+                }
+            }
+            head.map = token.map
+
             if (isChecklist) {
                 head.attrJoin('class', 'checklist');
             }
