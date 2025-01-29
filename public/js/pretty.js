@@ -30,6 +30,15 @@ const lastMeta = md.meta
 md.meta = {}
 delete md.metaError
 let rendered = md.render(text)
+// debugger
+let title = md.meta.title || 'Untitled'
+if (md.meta.cop) {
+  const major_version = md.meta.major_version || 1
+  const minor_version = md.meta.minor_version || 0
+  const patch_version = md.meta.patch_version || 0
+  title = `${title}-v${major_version}.${minor_version}.${patch_version}`
+}
+$('.markdown-title h1').text(title)
 if (md.meta.type && md.meta.type === 'slide') {
   const slideOptions = {
     separator: '^(\r\n?|\n)---(\r\n?|\n)$',

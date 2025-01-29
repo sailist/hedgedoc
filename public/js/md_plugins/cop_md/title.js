@@ -38,8 +38,8 @@ function render_heading_open(tokens, idx, options, env, self) {
     if (!md.meta.cop) {
         return self.renderToken(...arguments);
     }
-    
-    if (token.attrGet('no_number')) {
+
+    if (token.attrGet('no_number') === true) {
         return self.renderToken(...arguments);
     }
 
@@ -81,9 +81,6 @@ function titlePlugin(md) {
     const originalRender = md.renderer.rules.heading_open || function (tokens, idx, options, env, self) {
         return self.renderToken(tokens, idx, options);
     };
-    debugger;
-
-
     md.renderer.rules.heading_open = render_heading_open;
 }
 

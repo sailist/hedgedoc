@@ -209,3 +209,13 @@
 .markdown-body img {
     background-color: transparent;
 }
+
+.markdown-title {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.markdown-title h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
