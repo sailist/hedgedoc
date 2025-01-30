@@ -87,7 +87,8 @@ function fenceTablePlugin(md) {
         const caption = yamlData['caption'];
         const label = yamlData['label'];
         if (caption || label) {
-            state.push("caption_open", "caption", 1);
+            const caption_open = state.push("caption_open", "caption", 1);
+            caption_open.attrSet("label_type", "Table");
             const labelText = label ? label : makeid(10);
             const refToken = state.push("reference", "reference", 0);
             refToken.attrSet("w:name", labelText);

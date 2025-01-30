@@ -200,9 +200,10 @@ function html2table(md) {
 
             // 处理 caption
             const caption = table.querySelector('caption');
-            const label = table.querySelector('label');
+            const label = doc.querySelector('label');
             if (caption || label) {
-                builder.push('caption_open', 'caption', 1);
+                const caption_open = builder.push('caption_open', 'caption', 1);
+                caption_open.attrSet('label_type', 'Table');
                 const labelText = label ? label.textContent : makeid(10);
 
                 const refToken = builder.push('reference', 'reference', 0);

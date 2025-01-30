@@ -33,6 +33,8 @@ whiteList.rt = []
 whiteList.figure = []
 // allow figcaption tag
 whiteList.figcaption = []
+// allow caption tag
+whiteList.caption = []
 
 const filterXSSOptions = {
   allowCommentTag: true,
