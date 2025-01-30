@@ -131,22 +131,23 @@ let markdownArea = null
 
 let editor
 
+let firstOnScroll = false
+
 export function setupSyncAreas (edit, view, markdown, _editor) {
   editArea = edit
   viewArea = view
   markdownArea = markdown
-
   editor = _editor
 
   editArea.on('scroll', _.throttle(syncScrollToView, editScrollThrottle))
   viewArea.on('scroll', _.throttle(syncScrollToEdit, viewScrollThrottle))
 }
 
-let scrollMap, lineHeightMap, viewTop, viewBottom
+let realLineToViewYMap, absLineNoToWrapLineNoMap, viewTop, viewBottom
 
 export function clearMap () {
-  scrollMap = null
-  lineHeightMap = null
+  realLineToViewYMap = null
+  absLineNoToWrapLineNoMap = null
   viewTop = null
   viewBottom = null
 }
@@ -172,21 +173,12 @@ function buildMapInner (callback) {
   const lines = editor.getValue().split('\n')
   const lineHeight = editor.defaultTextHeight()
   for (i = 0; i < lines.length; i++) {
-    const str = lines[i]
-
-    _lineHeightMap.push(acc)
-
-    if (str.length === 0) {
-      acc++
-      continue
-    }
-
-    const h = editor.heightAtLine(i + 1) - editor.heightAtLine(i)
-    acc += Math.round(h / lineHeight)
+    acc = editor.heightAtLine(i + 1) - editor.heightAtLine(0)
+    _lineHeightMap.push(acc / lineHeight)
   }
+  
   _lineHeightMap.push(acc)
   const linesCount = acc
-
   for (i = 0; i < linesCount; i++) {
     _scrollMap.push(-1)
   }
@@ -195,14 +187,13 @@ function buildMapInner (callback) {
   // make the first line go top
   _scrollMap[0] = viewTop
 
-  const parts = markdownArea.find('.part').toArray()
+  const parts = markdownArea.find('[data-startline]').toArray()
   for (i = 0; i < parts.length; i++) {
     const $el = $(parts[i])
     let t = $el.attr('data-startline') - 1
     if (t === '') {
       return
     }
-    t = _lineHeightMap[t]
     if (t !== 0 && t !== nonEmptyList[nonEmptyList.length - 1]) {
       nonEmptyList.push(t)
     }
@@ -226,8 +217,11 @@ function buildMapInner (callback) {
 
   _scrollMap[0] = 0
 
-  scrollMap = _scrollMap
-  lineHeightMap = _lineHeightMap
+
+  realLineToViewYMap = _scrollMap
+  // editor line to real wrapped line
+  absLineNoToWrapLineNoMap = _lineHeightMap
+  console.log(_scrollMap)
 
   if (window.loaded && callback) callback()
 }
@@ -245,7 +239,7 @@ export function syncScrollToEdit (event, preventAnimate) {
     }
     return
   }
-  if (!scrollMap || !lineHeightMap) {
+  if (!realLineToViewYMap || !absLineNoToWrapLineNoMap) {
     buildMap(() => {
       syncScrollToEdit(event, preventAnimate)
     })
@@ -254,55 +248,29 @@ export function syncScrollToEdit (event, preventAnimate) {
   if (editScrolling) return
 
   const scrollTop = viewArea[0].scrollTop
-  let lineIndex = 0
-  for (let i = 0, l = scrollMap.length; i < l; i++) {
-    if (scrollMap[i] > scrollTop) {
+  let editorLineNo = 0
+  for (let i = 0, l = realLineToViewYMap.length; i < l; i++) {
+    if (realLineToViewYMap[i] > scrollTop) {
       break
     } else {
-      lineIndex = i
+      editorLineNo = i
     }
   }
-  let lineNo = 0
-  let lineDiff = 0
-  for (let i = 0, l = lineHeightMap.length; i < l; i++) {
-    if (lineHeightMap[i] > lineIndex) {
-      break
-    } else {
-      lineNo = lineHeightMap[i]
-      lineDiff = lineHeightMap[i + 1] - lineNo
-    }
-  }
+ 
+  
 
-  let posTo = 0
-  let topDiffPercent = 0
-  let posToNextDiff = 0
+  let editorLinePos = editor.heightAtLine(editorLineNo) - editor.heightAtLine(0)
   const scrollInfo = editor.getScrollInfo()
-  const textHeight = editor.defaultTextHeight()
-  const preLastLineHeight = scrollInfo.height - scrollInfo.clientHeight - textHeight
-  const preLastLineNo = Math.round(preLastLineHeight / textHeight)
-  const preLastLinePos = scrollMap[preLastLineNo]
-
-  if (scrollInfo.height > scrollInfo.clientHeight && scrollTop >= preLastLinePos) {
-    posTo = preLastLineHeight
-    topDiffPercent = (scrollTop - preLastLinePos) / (viewBottom - preLastLinePos)
-    posToNextDiff = textHeight * topDiffPercent
-    posTo += Math.ceil(posToNextDiff)
-  } else {
-    posTo = lineNo * textHeight
-    topDiffPercent = (scrollTop - scrollMap[lineNo]) / (scrollMap[lineNo + lineDiff] - scrollMap[lineNo])
-    posToNextDiff = textHeight * lineDiff * topDiffPercent
-    posTo += Math.ceil(posToNextDiff)
-  }
 
   let duration = 0
   if (preventAnimate) {
-    editArea.scrollTop(posTo)
+    editArea.scrollTop(editorLinePos)
   } else {
-    const posDiff = Math.abs(scrollInfo.top - posTo)
+    const posDiff = Math.abs(scrollInfo.top - editorLinePos)
     duration = posDiff / 50
     duration = duration >= 100 ? duration : 100
     editArea.stop(true, true).animate({
-      scrollTop: posTo
+      scrollTop: editorLinePos
     }, duration, 'linear')
   }
 
@@ -318,6 +286,32 @@ function viewScrollingTimeoutInner () {
 // sync edit scroll progress to view
 let editScrollingTimer = null
 
+function findAbsLineNoByHeight(scrollTop) {
+  let left = 0
+  let right = editor.lineCount() - 1
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const height = editor.heightAtLine(mid) - editor.heightAtLine(0)
+    
+    if (Math.abs(height - scrollTop) < 5) { // 允许5px的误差
+      return mid
+    }
+    
+    if (height < scrollTop) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  
+  // 返回最接近的行号
+  const leftHeight = editor.heightAtLine(left) - editor.heightAtLine(0)
+  const rightHeight = editor.heightAtLine(right) - editor.heightAtLine(0)
+  
+  return Math.abs(leftHeight - scrollTop) < Math.abs(rightHeight - scrollTop) ? left : right
+}
+
 export function syncScrollToView (event, preventAnimate) {
   if (appState.currentMode !== modeType.both || !appState.syncscroll || !viewArea) return
   if (window.preventSyncScrollToView) {
@@ -328,7 +322,15 @@ export function syncScrollToView (event, preventAnimate) {
     }
     return
   }
-  if (!scrollMap || !lineHeightMap) {
+  if (!realLineToViewYMap || !absLineNoToWrapLineNoMap) {
+    buildMap(() => {
+      syncScrollToView(event, preventAnimate)
+    })
+    return
+  }
+
+  if (!firstOnScroll && event && event.type === 'scroll') {
+    firstOnScroll = true
     buildMap(() => {
       syncScrollToView(event, preventAnimate)
     })
@@ -336,25 +338,20 @@ export function syncScrollToView (event, preventAnimate) {
   }
   if (viewScrolling) return
 
-  let posTo
-  let topDiffPercent, posToNextDiff
   const scrollInfo = editor.getScrollInfo()
-  const textHeight = editor.defaultTextHeight()
-  const lineNo = Math.floor(scrollInfo.top / textHeight)
-  // if reach the last line, will start lerp to the bottom
-  const diffToBottom = (scrollInfo.top + scrollInfo.clientHeight) - (scrollInfo.height - textHeight)
-  if (scrollInfo.height > scrollInfo.clientHeight && diffToBottom > 0) {
-    topDiffPercent = diffToBottom / textHeight
-    posTo = scrollMap[lineNo + 1]
-    posToNextDiff = (viewBottom - posTo) * topDiffPercent
-    posTo += Math.floor(posToNextDiff)
-  } else {
-    topDiffPercent = (scrollInfo.top % textHeight) / textHeight
-    posTo = scrollMap[lineNo]
-    posToNextDiff = (scrollMap[lineNo + 1] - posTo) * topDiffPercent
-    posTo += Math.floor(posToNextDiff)
-  }
+  const absLineNo = findAbsLineNoByHeight(scrollInfo.top)
+  
+  // 继续使用 absLineNo 查找对应的元素
+  const elements = markdownArea.find('.part').toArray()
+  const result = findClosestElement(elements, absLineNo)
+  const $el = result.element
+  
+  // 计算目标滚动位置
+  const elTop = $el.offset().top + viewArea.scrollTop() - viewArea.offset().top
+  const elHeight = $el.height()
+  const posTo = Math.round(elTop + (elHeight * result.progress))
 
+  // 执行滚动
   let duration = 0
   if (preventAnimate) {
     viewArea.scrollTop(posTo)
@@ -370,6 +367,55 @@ export function syncScrollToView (event, preventAnimate) {
   editScrolling = true
   clearTimeout(editScrollingTimer)
   editScrollingTimer = setTimeout(editScrollingTimeoutInner, duration * 1.5)
+}
+
+// 二分查找最接近的元素
+function findClosestElement(elements, targetLine) {
+  let left = 0
+  let right = elements.length - 1
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const $el = $(elements[mid])
+    const startLine = parseInt($el.attr('data-startline'))
+    const endLine = parseInt($el.attr('data-endline'))
+
+    if (targetLine >= startLine && targetLine <= endLine) {
+      const childElements = $el.find('[data-startline]').toArray()
+      if (childElements.length > 0) {
+        const childResult = findClosestElement(childElements, targetLine)
+        if (!childResult.element.length) {
+          return { element: $el, progress: (targetLine - startLine) / (endLine - startLine) }
+        }
+        return childResult
+      }
+      
+      if (startLine === endLine) {
+        return { element: $el, progress: 0 }
+      }
+      return { element: $el, progress: (targetLine - startLine) / (endLine - startLine) }
+    }
+
+    if (targetLine < startLine) {
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+
+  // 返回最接近的元素
+  if (left >= elements.length) return { element: $(elements[elements.length - 1]), progress: 0 }
+  if (right < 0) return { element: $(elements[0]), progress: 0 }
+  
+  const leftEl = $(elements[left])
+  const rightEl = $(elements[right])
+  const leftDiff = Math.abs(parseInt(leftEl.attr('data-startline')) - targetLine)
+  const rightDiff = Math.abs(parseInt(rightEl.attr('data-startline')) - targetLine)
+  
+  return { 
+    element: leftDiff < rightDiff ? leftEl : rightEl,
+    progress: 0 
+  }
 }
 
 function editScrollingTimeoutInner () {
