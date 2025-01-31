@@ -376,3 +376,38 @@ select {
 .cover-heading img {
     max-width: 100%;
 }
+
+.cop-tree {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.tree-node {
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tree-node:hover {
+  background-color: #f5f5f5;
+}
+
+.tree-node:hover .node-title {
+  text-decoration: underline;
+  color: #000;
+}
+.tree-node:hover .note-file-id {
+  text-decoration: underline;
+  color: #000;
+}
+
+.node-title {
+  font-weight: 500;
+}
+
+.node-version {
+  color: #666;
+  font-size: 0.9em;
+}

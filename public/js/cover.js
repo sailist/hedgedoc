@@ -116,6 +116,20 @@ $('.ui-home').click(function (e) {
     $('.section:visible').hide()
     $('#home').fadeIn()
   }
+
+  const $copTree = $("#cop-tree-container")
+  
+  // 修改请求路径
+  fetch(`${serverurl}/c/info`)  // 改为与后端路由匹配的路径
+    .then(response => response.json())
+    .then(data => {
+      const treeData = buildTreeData(data)
+      renderTree($copTree, treeData)
+    })
+    .catch(err => {
+      console.error('Failed to load cop tree:', err)
+      $copTree.html('Failed to load cop tree')
+    })
 })
 
 $('.ui-history').click(() => {
@@ -453,3 +467,110 @@ $('.signin-modal').on('shown.bs.modal', function () {
     fieldOpenID.focus()
   }
 })
+
+// 构建树形数据结构
+function buildTreeData(flatData) {
+  const allRoot = "FIL-C-131028-100002-EZX";
+  const nodeMap = new Map()
+  const duplicateCounter = new Map() // 用于追踪重复的 fileId
+  
+  // 创建根节点
+  // nodeMap.set(allRoot, {
+  //   id: allRoot,
+  //   title: "Root",
+  //   version: "v1.0.0",
+  //   children: []
+  // })
+  flatData = flatData.filter(item => item.noteShortId)
+
+  // 首先创建所有节点
+  flatData.forEach(item => {
+    const fileId = item.fileId
+    if (nodeMap.has(fileId)) {
+      // 处理重复的 fileId
+      duplicateCounter.set(fileId, (duplicateCounter.get(fileId) || 1) + 1)
+      const duplicateId = `${fileId}_${duplicateCounter.get(fileId)}`
+      
+      nodeMap.set(duplicateId, {
+        fileId: duplicateId,
+        title: `${item.title || `Untitled (${fileId})`} (duplicate ${duplicateCounter.get(fileId)})`,
+        version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
+        noteId: item.noteId,
+        noteShortId: item.noteShortId,
+        noteAlias: item.noteAlias,
+        children: []
+      })
+    } else {
+      nodeMap.set(fileId, {
+        fileId: fileId,
+        title: item.title || `Untitled (${fileId})`,
+        version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
+        noteId: item.noteId,
+        noteShortId: item.noteShortId,
+        noteAlias: item.noteAlias,
+        children: []
+      })
+    }
+  })
+
+  // 建立父子关系
+  flatData.forEach(item => {
+    if (item.parentFileId === item.fileId) {
+      return
+    }
+    const node = nodeMap.get(item.fileId)
+    const parentNode = nodeMap.get(item.parentFileId)
+    
+    if (parentNode) {
+      parentNode.children.push(node)
+    } else {
+      // 如果没有父节点，就连接到 allRoot
+      nodeMap.get(allRoot).children.push(node)
+    }
+  })
+
+  // 只返回根节点
+  return [nodeMap.get(allRoot)]
+}
+
+// 渲染树结构
+function renderTree($container, treeData) {
+  $container.empty()
+  const $tree = $('<ul class="cop-tree"></ul>')
+  
+  function renderNode(node) {
+    const $li = $('<li></li>')
+    const $content = $(`
+      <div class="tree-node" data-shortid="${node.noteShortId}" data-alias="${node.noteAlias}">
+        <a href="${serverurl}/${node.noteShortId || node.noteAlias}">
+          <span class="node-title">${node.title}</span>
+          <span class="note-file-id">${node.fileId}</span>
+          <span class="node-version">${node.version}</span>
+        </a>
+      </div>
+    `)
+    
+    $li.append($content)
+    
+    // 添加点击事件
+    // $content.on('click', () => {
+    //   window.location.href = `${serverurl}/${node.noteShortId || node.noteAlias}`
+    // })
+
+    if (node.children && node.children.length > 0) {
+      const $childList = $('<ul></ul>')
+      node.children.forEach(child => {
+        $childList.append(renderNode(child))
+      })
+      $li.append($childList)
+    }
+    
+    return $li
+  }
+
+  treeData.forEach(node => {
+    $tree.append(renderNode(node))
+  })
+  
+  $container.append($tree)
+}
