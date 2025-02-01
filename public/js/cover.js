@@ -26,6 +26,8 @@ import {
 import { saveAs } from 'file-saver'
 import List from 'list.js'
 import S from 'string'
+import InfiniteTree from 'infinite-tree'
+import 'infinite-tree/dist/infinite-tree.css'
 
 require('./locale')
 
@@ -116,20 +118,7 @@ $('.ui-home').click(function (e) {
     $('.section:visible').hide()
     $('#home').fadeIn()
   }
-
-  const $copTree = $("#cop-tree-container")
-  
-  // 修改请求路径
-  fetch(`${serverurl}/c/info`)  // 改为与后端路由匹配的路径
-    .then(response => response.json())
-    .then(data => {
-      const treeData = buildTreeData(data)
-      renderTree($copTree, treeData)
-    })
-    .catch(err => {
-      console.error('Failed to load cop tree:', err)
-      $copTree.html('Failed to load cop tree')
-    })
+  updateCopTree()
 })
 
 $('.ui-history').click(() => {
@@ -468,109 +457,143 @@ $('.signin-modal').on('shown.bs.modal', function () {
   }
 })
 
-// 构建树形数据结构
+
+function updateCopTree() {
+
+  const $copTree = $("#cop-tree-container")
+
+  // 修改请求路径
+  fetch(`${serverurl}/c/info`)  // 改为与后端路由匹配的路径
+    .then(response => response.json())
+    .then(data => {
+      const treeData = buildTreeData(data)
+      renderTree($copTree, treeData)
+    })
+    .catch(err => {
+      console.error('Failed to load cop tree:', err)
+      $copTree.html('Failed to load cop tree')
+    })
+}
+
+// 构建树形数据结构 - 适配 infinite-tree 格式
 function buildTreeData(flatData) {
-  const allRoot = "FIL-C-131028-100002-EZX";
   const nodeMap = new Map()
-  const duplicateCounter = new Map() // 用于追踪重复的 fileId
-  
-  // 创建根节点
-  // nodeMap.set(allRoot, {
-  //   id: allRoot,
-  //   title: "Root",
-  //   version: "v1.0.0",
-  //   children: []
-  // })
+  const duplicateCounter = new Map()
+
   flatData = flatData.filter(item => item.noteShortId)
 
-  // 首先创建所有节点
+  // 创建所有节点
   flatData.forEach(item => {
     const fileId = item.fileId
     if (nodeMap.has(fileId)) {
-      // 处理重复的 fileId
       duplicateCounter.set(fileId, (duplicateCounter.get(fileId) || 1) + 1)
       const duplicateId = `${fileId}_${duplicateCounter.get(fileId)}`
-      
+
       nodeMap.set(duplicateId, {
-        fileId: duplicateId,
-        title: `${item.title || `Untitled (${fileId})`} (duplicate ${duplicateCounter.get(fileId)})`,
-        version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
-        noteId: item.noteId,
-        noteShortId: item.noteShortId,
-        noteAlias: item.noteAlias,
-        children: []
+        id: duplicateId,
+        name: item.title || `Untitled (${fileId})`,
+        loadOnDemand: false,
+        children: [],
+        // 保存额外数据用于渲染
+        metadata: {
+          fileId: duplicateId,
+          version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
+          noteId: item.noteId,
+          noteShortId: item.noteShortId,
+          noteAlias: item.noteAlias
+        }
       })
     } else {
       nodeMap.set(fileId, {
-        fileId: fileId,
-        title: item.title || `Untitled (${fileId})`,
-        version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
-        noteId: item.noteId,
-        noteShortId: item.noteShortId,
-        noteAlias: item.noteAlias,
-        children: []
+        id: fileId,
+        name: item.title || `Untitled (${fileId})`,
+        loadOnDemand: false,
+        children: [],
+        metadata: {
+          fileId: fileId,
+          version: `v${item.majorVersion}.${item.minorVersion}.${item.patchVersion}`,
+          noteId: item.noteId,
+          noteShortId: item.noteShortId,
+          noteAlias: item.noteAlias
+        }
       })
     }
   })
 
   // 建立父子关系
   flatData.forEach(item => {
-    if (item.parentFileId === item.fileId) {
-      return
-    }
+    if (item.parentFileId === item.fileId) return
+
     const node = nodeMap.get(item.fileId)
     const parentNode = nodeMap.get(item.parentFileId)
-    
+
     if (parentNode) {
       parentNode.children.push(node)
     } else {
-      // 如果没有父节点，就连接到 allRoot
-      nodeMap.get(allRoot).children.push(node)
+      // 如果找不到父节点,将其添加到根节点
+      const rootNode = nodeMap.get("FIL-C-131028-100002-EZX")
+      if (rootNode && node) {
+        rootNode.children.push(node)
+      }
     }
   })
 
-  // 只返回根节点
-  return [nodeMap.get(allRoot)]
+  // 返回根级节点列表
+  return Array.from(nodeMap.values()).filter(node => {
+    return node.id == "FIL-C-131028-100002-EZX"
+  })
 }
 
-// 渲染树结构
+// 使用 infinite-tree 渲染树结构
 function renderTree($container, treeData) {
   $container.empty()
-  const $tree = $('<ul class="cop-tree"></ul>')
-  
-  function renderNode(node) {
-    const $li = $('<li></li>')
-    const $content = $(`
-      <div class="tree-node" data-shortid="${node.noteShortId}" data-alias="${node.noteAlias}">
-        <a href="${serverurl}/${node.noteShortId || node.noteAlias}">
-          <span class="node-title">${node.title}</span>
-          <span class="note-file-id">${node.fileId}</span>
-          <span class="node-version">${node.version}</span>
-        </a>
-      </div>
-    `)
-    
-    $li.append($content)
-    
-    // 添加点击事件
-    // $content.on('click', () => {
-    //   window.location.href = `${serverurl}/${node.noteShortId || node.noteAlias}`
-    // })
 
-    if (node.children && node.children.length > 0) {
-      const $childList = $('<ul></ul>')
-      node.children.forEach(child => {
-        $childList.append(renderNode(child))
-      })
-      $li.append($childList)
+  const tree = new InfiniteTree($container[0], {
+    data: treeData,
+    autoOpen: true,
+    // 自定义节点渲染
+    rowRenderer: function (node, treeOptions) {
+      const { id, name, state, metadata, children } = node
+      const { fileId, version, noteShortId, noteAlias } = metadata
+
+      const togglerContent = state.open ? '▼' : '▶'
+      // const togglerContent = state.open ? '-' : '+'
+      // const indentContent = '&nbsp;'.repeat(node.state.depth * 2)
+      if (children.length == 0) {
+        return `
+        <div class="infinite-tree-item" data-id="${id}">
+          <a style="margin-left: ${(node.state.depth + 1) * 20}px;" href="${serverurl}/${noteShortId || noteAlias}" >
+              <span class="node-title">${name}</span>
+              <span class="note-file-id">${fileId}</span>
+              <span class="node-version">${version}</span>
+            </a>
+          </div>
+        `
+      }
+      // if ()
+      return `
+      <div class="infinite-tree-item" data-id="${id}">
+        <span style="font-weight: 600; margin-left: ${node.state.depth * 20}px;" class="infinite-tree-toggler ${state.open ? 'tree-toggler-open' : ''}">${togglerContent}</span>
+        <a href="${serverurl}/${noteShortId || noteAlias}" >
+            <span class="node-title">${name}</span>
+            <span class="note-file-id">${fileId}</span>
+            <span class="node-version">${version}</span>
+          </a>
+        </div>
+      `
     }
-    
-    return $li
-  }
-
-  treeData.forEach(node => {
-    $tree.append(renderNode(node))
   })
-  
-  $container.append($tree)
+
+  // 添加展开/收起事件处理
+  tree.on('openNode', (node) => {
+    tree.updateNode(node)
+  })
+
+  tree.on('closeNode', (node) => {
+    tree.updateNode(node)
+  })
 }
+
+$(document).ready(() => {
+  updateCopTree()
+})

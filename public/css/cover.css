@@ -50,8 +50,9 @@ body {
 }
 .site-wrapper-inner {
     display: table-cell;
-    vertical-align: middle;
+    /* vertical-align: middle; */
 }
+
 .cover-container {
     width: 100%;
     padding-top: 80px;
@@ -160,10 +161,12 @@ body {
         position: fixed;
         bottom: 0;
     }
+
     /* Start the vertical centering */
     .site-wrapper-inner {
-        vertical-align: middle;
+        /* vertical-align: middle; */
     }
+
     /* Handle the widths */
     .masthead,
     .mastfoot,
@@ -378,36 +381,48 @@ select {
 }
 
 .cop-tree {
-  list-style: none;
-  padding-left: 20px;
+    list-style: none;
+    padding-left: 20px;
 }
 
-.tree-node {
-  padding: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.infinite-tree {
+    text-align: left;
 }
 
-.tree-node:hover {
-  background-color: #f5f5f5;
+.infinite-tree-item {
+    padding: 5px;
+    /* cursor: pointer; */
 }
 
-.tree-node:hover .node-title {
-  text-decoration: underline;
-  color: #000;
-}
-.tree-node:hover .note-file-id {
-  text-decoration: underline;
-  color: #000;
+.infinite-tree-toggler {
+    display: inline-block;
+    width: 20px;
+    /* text-align: center; */
+    /* cursor: pointer; */
 }
 
-.node-title {
-  font-weight: 500;
+.infinite-tree-title {
+    text-decoration: none;
+    color: inherit;
+}
+
+.infinite-tree-title:hover {
+    text-decoration: underline;
+}
+
+.infinite-tree-item:hover .note-title {
+    text-decoration: underline;
+    color: #000;
 }
 
 .node-version {
-  color: #666;
-  font-size: 0.9em;
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.note-file-id {
+    color: #999;
+    font-size: 0.8em;
+    margin-left: 10px;
 }
