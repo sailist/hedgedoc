@@ -3,6 +3,9 @@ cop: true
 file_id: FIL-C-{dateid}-{EID}-{ZZX}
 parent_file_id: FIL-C-240929-901068-MDX
 title: __title__
+major_version: 1
+minor_version: 0
+patch_version: 0
 ---
 
 ```table
