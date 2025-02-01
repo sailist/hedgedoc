@@ -30,7 +30,6 @@ function fenceTablePlugin(md) {
         let tableEnd = nextLine;
 
         while (nextLine < endLine) {
-            console.log(state.src.slice(state.bMarks[nextLine], state.eMarks[nextLine]))
             if (state.src.slice(state.bMarks[nextLine], state.eMarks[nextLine]).trim() === '```') {
                 break;
             }

@@ -221,7 +221,6 @@ function buildMapInner (callback) {
   realLineToViewYMap = _scrollMap
   // editor line to real wrapped line
   absLineNoToWrapLineNoMap = _lineHeightMap
-  console.log(_scrollMap)
 
   if (window.loaded && callback) callback()
 }
