@@ -31,3 +31,28 @@ body.night .toolbar > .btn-toolbar > .btn-group > .btn:hover {
   background-color: #37373b;
   padding: 5px;
 }
+
+.cop-error-item {
+  padding: 8px 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cop-error-item:hover {
+  background-color: #f5f5f5;
+}
+
+.cop-error-item .error-message {
+  margin: 0 8px;
+}
+
+.cop-error-item small {
+  float: right;
+  margin-left: 10px;
+}
+
+/* 夜间模式 */
+body.night .cop-error-item:hover {
+  background-color: #3a3a3a;
+}

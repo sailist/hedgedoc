@@ -983,7 +983,7 @@ function showStatus (type, num) {
 
   shortStatus.html('')
   status.html('')
-
+  // copStatus.html('')
   switch (currentStatus) {
     case statusType.connected:
       label.addClass(statusType.connected.label)
@@ -2818,6 +2818,9 @@ const options = {
 const onlineUserList = new List('online-user-list', options)
 const shortOnlineUserList = new List('short-online-user-list', options)
 
+
+
+
 function updateOnlineStatus () {
   if (!window.loaded || !socket.connected) return
   const _onlineUsers = deduplicateOnlineUsers(onlineUsers)
@@ -3469,7 +3472,25 @@ function updateViewInner () {
   const lastMeta = md.meta
   md.meta = {}
   delete md.metaError
-  let rendered = md.render(value)
+  const env = {}
+  let rendered = md.render(value, env)
+  
+  // 获取检查结果并更新状态
+  if (env && md.meta.cop) {
+    const defaultErrors = [
+      // {
+      //   line: 1,
+      //   message: "标题格式错误"
+      // },
+      // {
+      //   line: 50, 
+      //   message: "缺少必要字段"
+      // }
+    ]
+    updateCopStatus(env.validationErrors || defaultErrors)
+    
+  }
+
   if (md.meta.type && md.meta.type === 'slide') {
     ui.area.view.addClass('black')
     const slideOptions = {
@@ -3539,6 +3560,98 @@ function updateViewInner () {
   if (postUpdateEvent && typeof postUpdateEvent === 'function') {
     postUpdateEvent()
   }
+}
+
+function updateCopStatus(errors) {
+  const $status = ui.toolbar.cop_status
+  const $list = ui.toolbar.cop_list
+  
+  // 清空之前的状态
+  $status.empty()
+  $list.empty()
+  
+  if (!errors || errors.length === 0) {
+    // 通过状态
+    $status.html(`
+      <span class="label label-success" title="验证通过">
+        <i class="fa fa-check"></i> PASS
+      </span>
+    `)
+    return
+  }
+
+  // 错误状态
+  $status.html(`
+    <span class="label label-danger" title="点击查看详情">
+      <i class="fa fa-times"></i> ${errors.length} ${errors.length > 1 ? 'ERRORS' : 'ERROR'}
+    </span>
+  `)
+
+  // 更新错误列表
+  errors.forEach(error => {
+    const $item = $(`
+      <li class="cop-error-item">
+        <a href="#" class="cop-error-link">
+          <div class="error-header">
+            <i class="fa fa-exclamation-circle text-danger"></i>
+            <span class="error-line">Line ${error.line}</span>
+          </div>
+          <div class="error-message">${error.message}</div>
+        </a>
+      </li>
+    `)
+    
+    // 点击跳转到对应行
+    $item.find('a').on('click', (e) => {
+      e.preventDefault()
+      // 高亮显示该行
+      editor.addLineClass(error.line - 1, 'background', 'line-error')
+      // 跳转并聚焦
+      editor.setCursor({line: error.line - 1, ch: 0})
+      editor.focus()
+      syncScrollToView()
+      // 200ms后移除高亮
+      setTimeout(() => {
+        editor.removeLineClass(error.line - 1, 'background', 'line-error')
+      }, 2000)
+    })
+    
+    $list.append($item)
+  })
+}
+
+// 添加更新检查列表的函数
+function updateValidationList(errors) {
+  const $list = $('.ui-validation-list')
+  $list.empty()
+  
+  if (!errors || errors.length === 0) {
+    $list.hide()
+    return
+  }
+
+  errors.forEach(error => {
+    const $item = $('<div class="validation-item"></div>')
+    $item.html(`
+      <div class="validation-message">
+        <i class="fa fa-exclamation-circle"></i>
+        ${error.message}
+      </div>
+      <div class="validation-location">
+        Line ${error.line}
+      </div>
+    `)
+    
+    // 点击跳转到对应行
+    $item.on('click', () => {
+      editor.setCursor({line: error.line - 1, ch: 0})
+      editor.focus()
+    })
+    
+    $list.append($item)
+  })
+
+  $list.show()
 }
 
 const updateHistoryDebounce = 600

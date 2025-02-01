@@ -23,6 +23,7 @@ import { markdownTableAlign, html2table } from './md_plugins/common/htmltable'
 import fenceTablePlugin from './md_plugins/common/fencetable'
 // import titlePlugin from './md_plugins/cop_md/title'
 import refLinkPlugin from './md_plugins/ref_link'
+import checkErrorPlugin from './md_plugins/cop_md/check_error'
 
 require('prismjs/themes/prism.css')
 require('prismjs/components/prism-wiki')
@@ -1411,6 +1412,7 @@ md.use(markdownTableAlign)
 md.use(fenceTablePlugin)
 
 md.use(refLinkPlugin)
+md.use(checkErrorPlugin)
 
 export default {
   md

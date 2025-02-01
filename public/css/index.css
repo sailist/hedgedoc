@@ -212,10 +212,16 @@ body:not(.night) .night {
 .ui-status * {
     font-size: 16px !important;
 }
+.ui-cop-status * {
+    font-size: 16px !important;
+}
 .navbar-brand {
     font-weight: bold;
 }
 .nav-status .ui-status * {
+    font-size: 14px;
+}
+.nav-status .ui-cop-status * {
     font-size: 14px;
 }
 .nav-mobile {
@@ -237,7 +243,15 @@ body:not(.night) .night {
     min-width: 120px;
     background-color: transparent !important;
 }
+.ui-cop-status {
+    cursor: auto !important;
+    min-width: 120px;
+    background-color: transparent !important;
+}
 .ui-status span {
+    cursor: pointer;
+}
+.ui-cop-status span {
     cursor: pointer;
 }
 .ui-short-status {
