@@ -18,3 +18,40 @@
     overflow-y: auto;  /* 添加垂直滚动条 */
     border: 1px solid #ddd;
 }
+
+.revision-tag-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tag-item {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  font-family: monospace;
+}
+
+.tag-item.old {
+  color: #d73a49;
+}
+
+.tag-item.new {
+  color: #28a745;
+}
+
+.tag-item-arrow {
+  margin: 0 15px;
+  color: #6c757d;
+  font-size: 18px;
+}
+
+.no-changes-message {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}

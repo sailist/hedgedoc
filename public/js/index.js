@@ -1427,6 +1427,7 @@ ui.modal.revision.on('show.bs.modal', function (e) {
   // 使用 createRoot API 替代 render
   const root = createRoot(container);
   const element = React.createElement(RevisionHistory, {
+    editor: editor,
     noteUrl: noteurl,
     onClose: () => ui.modal.revision.modal('hide')
   });
@@ -2654,6 +2655,7 @@ socket.on('doc', function (obj) {
     if (cmClient) cmClient.editorAdapter.ignoreNextChange = true
     if (body) editor.setValue(body)
     else editor.setValue('')
+    editor.focus()
   }
 
   if (!window.loaded) {

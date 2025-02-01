@@ -4,13 +4,13 @@ import RevisionViewer from './RevisionViewer';
 import { useRevisionHistory } from './hooks';
 import './viewer.css';
 
-export default function RevisionHistory({ noteUrl, onClose }) {
+export default function RevisionHistory({ editor, noteUrl, onClose }) {
   const {
     revisions,
     selectedRevision,
     loading,
     handleSelectRevision
-  } = useRevisionHistory(noteUrl);
+  } = useRevisionHistory(noteUrl, editor);
 
   return (
     <div className="modal-content">
@@ -34,6 +34,8 @@ export default function RevisionHistory({ noteUrl, onClose }) {
                 content={selectedRevision?.content || ''}
                 previousContent={selectedRevision?.previousContent || ''}
                 patches={selectedRevision?.patch}
+                tag={selectedRevision?.tag}
+                prevTag={selectedRevision?.prevTag}
               />
             )}
           </div>
