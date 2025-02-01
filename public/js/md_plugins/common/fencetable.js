@@ -63,7 +63,22 @@ function fenceTablePlugin(md) {
         // const tableState = new state.constructor(tableContent, md, state.env);
         const tableTokens = [];
         state.md.block.parse(tableContent, state.md, state.env, tableTokens)
-
+        if (yamlData['type'] === '修订记录') {
+            // 筛选第一列非表头的内容
+            let firstColumn = true;
+            let lastVersion = '';
+            for (let i = 0; i < tableTokens.length; i++) {
+                if (tableTokens[i].type === 'tr_open') {
+                    firstColumn = true;
+                }
+                if (firstColumn && tableTokens[i].type === 'inline') {
+                    lastVersion = tableTokens[i].content;
+                    firstColumn = false;
+                }
+            }
+            // 只添加筛选后的 tokens
+            state.env.lastVersion = lastVersion;
+        }
 
         // 将 yaml 属性添加到表格 token
         
