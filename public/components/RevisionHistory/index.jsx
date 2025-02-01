@@ -2,6 +2,7 @@ import React from 'react';
 import RevisionList from './RevisionList';
 import RevisionViewer from './RevisionViewer';
 import { useRevisionHistory } from './hooks';
+import './viewer.css';
 
 export default function RevisionHistory({ noteUrl, onClose }) {
   const {
@@ -30,7 +31,8 @@ export default function RevisionHistory({ noteUrl, onClose }) {
               <div>Loading...</div>
             ) : (
               <RevisionViewer
-                content={selectedRevision?.content}
+                content={selectedRevision?.content || ''}
+                previousContent={selectedRevision?.previousContent || ''}
                 patches={selectedRevision?.patch}
               />
             )}

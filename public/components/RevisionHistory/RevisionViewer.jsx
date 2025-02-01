@@ -1,78 +1,40 @@
-import React, { useEffect, useRef } from 'react';
-import { EditorView, keymap, lineNumbers } from '@codemirror/view';
-import { EditorState } from '@codemirror/state';
-import { defaultKeymap } from '@codemirror/commands';
-import { markdown } from '@codemirror/lang-markdown';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import React, { useEffect, useState } from 'react';
+import { diffLines, formatLines } from '../../unidiff';
+import { parseDiff, Diff, Hunk } from 'react-diff-view';
+import 'react-diff-view/style/index.css';
 
-export default function RevisionViewer({ content, patches }) {
-  const editorRef = useRef(null);
-  const viewerRef = useRef(null);
+export default function RevisionViewer({ previousContent, content, patches }) {
+  const [diffView, setDiffView] = useState(null);
 
-  // 初始化 CodeMirror
   useEffect(() => {
-    if (!editorRef.current) return;
-
     try {
-      const state = EditorState.create({
-        doc: content || '',
-        extensions: [
-          keymap.of(defaultKeymap),
-          markdown(),
-          syntaxHighlighting(defaultHighlightStyle),
-          lineNumbers(),
-          EditorView.theme({
-            "&": {
-              height: "100%",
-              width: "100%",
-              maxHeight: "500px"
-            },
-            ".cm-scroller": {
-              overflow: "auto",
-              maxHeight: "100%"
-            },
-            ".cm-content": {
-              minHeight: "100%"
-            }
-          }),
-          EditorState.readOnly.of(true)
-        ]
-      });
-
-      const view = new EditorView({
-        state,
-        parent: editorRef.current
-      });
-
-      viewerRef.current = view;
+      const diffText = formatLines(diffLines(previousContent, content), { context: 3 });
+      const [diff] = parseDiff(diffText, { nearbySequences: 'zip' });
+      setDiffView(diff);
     } catch (error) {
-      console.error('CodeMirror initialization failed:', error);
+      console.error('Diff generation failed:', error);
     }
-
-    return () => {
-      if (viewerRef.current) {
-        viewerRef.current.destroy();
-      }
-    };
-  }, []);
-
-  // 处理内容更新和差异标记
-  useEffect(() => {
-    const viewer = viewerRef.current;
-    if (!viewer || !content) return;
-
-    // 更新内容
-    viewer.dispatch({
-      changes: {
-        from: 0,
-        to: viewer.state.doc.length,
-        insert: content
-      }
-    });
-
-  }, [content, patches]);
+  }, [previousContent, content]);
 
   return (
-    <div className="revision-viewer" ref={editorRef} />
+    <div className="revision-container">
+      <div className="diff-view">
+        {diffView && (
+          <Diff 
+            viewType="split" 
+            diffType={diffView.type}
+            optimizeSelection
+            hunks={diffView.hunks || []}
+            className="diff-content"
+          >
+            {hunks =>
+              hunks.map(hunk => (
+                <Hunk key={hunk.content} hunk={hunk} />
+              ))
+            }
+          </Diff>
+        )}
+      </div>
+    </div>
   );
 } 

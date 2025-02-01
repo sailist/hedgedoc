@@ -630,3 +630,7 @@ div[contenteditable]:empty:not(:focus):before{
         height: auto !important;
     }
 }
+
+.revision-modal-dialog {
+    width: 90% !important;
+}

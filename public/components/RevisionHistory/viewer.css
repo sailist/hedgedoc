@@ -12,3 +12,9 @@
     background-color: rgba(255, 230, 230, 0.7);
     text-decoration: line-through;
 }
+
+.diff-view, .revision-list {
+    height: 500px;  /* 设置固定高度，可以根据需求调整 */
+    overflow-y: auto;  /* 添加垂直滚动条 */
+    border: 1px solid #ddd;
+}
