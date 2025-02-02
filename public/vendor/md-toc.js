@@ -47,7 +47,9 @@
 
     var tables = this.el.getElementsByTagName('table')
     for (var k = 0; k < tables.length; k++) {
-      this.tableTitleElements.push(tables[k])
+      if (tables[k].classList.contains('checklist')) {
+        this.tableTitleElements.push(tables[k])
+      }
     }
   }
 
@@ -122,17 +124,16 @@
       if (openTag) {
         content += '</li>\n'
       }
-      content += '<li>Tables<ul>\n'
+      content += '<li>Checklists<ul>\n'
       
-      // 添加所有表格作为二级目录
       for (var i = 0; i < this.tableTitleElements.length; i++) {
         var table = this.tableTitleElements[i]
         var tableId = table.getAttribute('id')
         if (!tableId) {
-          table.setAttribute('id', 'table' + (i + 1))
-          tableId = 'table' + (i + 1)
+          table.setAttribute('id', 'checklist' + (i + 1))
+          tableId = 'checklist' + (i + 1)
         }
-        content += '<li><a href="#' + tableId + '">Table ' + (i + 1) + '</a></li>\n'
+        content += '<li><a href="#' + tableId + '">Checklist ' + (i + 1) + '</a></li>\n'
       }
       
       content += '</ul></li>\n'
