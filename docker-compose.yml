@@ -1,0 +1,30 @@
+version: '3'
+services:
+  database:
+    image: postgres:13.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=hedgedoc
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=hedgedoc
+    volumes:
+      - ../database:/var/lib/postgresql/data
+    restart: always
+    network_mode: bridge
+  app:
+    # Make sure to use the latest release from https://hedgedoc.org/latest-release
+    image: hedgedoc-cop
+    environment:
+      - CMD_DB_URL=postgres://hedgedoc:password@172.32.19.18:5432/hedgedoc
+      - CMD_DOMAIN=172.32.19.18
+      - CMD_PORT=3000
+      - CMD_URL_ADDPORT=true
+    volumes:
+      - ./uploads:/app/public/uploads
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - database
+    network_mode: bridge
