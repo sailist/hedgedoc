@@ -54,6 +54,7 @@ body {
 }
 
 .cover-container {
+    height: 100%;
     width: 100%;
     padding-top: 80px;
     margin-right: auto;
@@ -185,6 +186,7 @@ body {
 .section ul {
     list-style: none;
 }
+
 /* custom */
 
 html,
@@ -425,4 +427,9 @@ select {
     color: #999;
     font-size: 0.8em;
     margin-left: 10px;
+}
+
+.infinite-tree-scroll {
+    height: 100%;
+    max-height: 100%;
 }

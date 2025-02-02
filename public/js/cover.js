@@ -466,7 +466,7 @@ function updateCopTree() {
   fetch(`${serverurl}/c/info`)  // 改为与后端路由匹配的路径
     .then(response => response.json())
     .then(data => {
-      const treeData = buildTreeData(data)
+      const treeData = buildCopTreeData(data)
       renderTree($copTree, treeData)
     })
     .catch(err => {
@@ -476,7 +476,7 @@ function updateCopTree() {
 }
 
 // 构建树形数据结构 - 适配 infinite-tree 格式
-function buildTreeData(flatData) {
+function buildCopTreeData(flatData) {
   const nodeMap = new Map()
   const duplicateCounter = new Map()
 
@@ -531,9 +531,24 @@ function buildTreeData(flatData) {
       parentNode.children.push(node)
     } else {
       // 如果找不到父节点,将其添加到根节点
+      const parentNode = {
+        id: item.parentFileId,
+        name: item.parentFileId === 'DUPLICATED-FILE-ID' ? `FileID 重复 ` : `未知 COP `,
+        loadOnDemand: false,
+        children: [node],
+        metadata: {
+          fileId: item.parentFileId,
+          version: `v0.0.0`,
+          noteId: "-",
+          noteShortId: "-",
+          noteAlias: "-"
+        }
+      }
+
+      nodeMap.set(item.parentFileId, parentNode)
       const rootNode = nodeMap.get("FIL-C-131028-100002-EZX")
       if (rootNode && node) {
-        rootNode.children.push(node)
+        rootNode.children.push(parentNode)
       }
     }
   })
@@ -557,12 +572,16 @@ function renderTree($container, treeData) {
       const { fileId, version, noteShortId, noteAlias } = metadata
 
       const togglerContent = state.open ? '▼' : '▶'
+      let href = ""
+      if (noteShortId !== '-') {
+        href = `${serverurl}/${noteShortId || noteAlias}`
+      }
       // const togglerContent = state.open ? '-' : '+'
       // const indentContent = '&nbsp;'.repeat(node.state.depth * 2)
       if (children.length == 0) {
         return `
         <div class="infinite-tree-item" data-id="${id}">
-          <a style="margin-left: ${(node.state.depth + 1) * 20}px;" href="${serverurl}/${noteShortId || noteAlias}" >
+          <a style="margin-left: ${(node.state.depth + 1) * 20}px;" href="${href}" >
               <span class="node-title">${name}</span>
               <span class="note-file-id">${fileId}</span>
               <span class="node-version">${version}</span>
@@ -574,7 +593,7 @@ function renderTree($container, treeData) {
       return `
       <div class="infinite-tree-item" data-id="${id}">
         <span style="font-weight: 600; margin-left: ${node.state.depth * 20}px;" class="infinite-tree-toggler ${state.open ? 'tree-toggler-open' : ''}">${togglerContent}</span>
-        <a href="${serverurl}/${noteShortId || noteAlias}" >
+        <a href="${href}" >
             <span class="node-title">${name}</span>
             <span class="note-file-id">${fileId}</span>
             <span class="node-version">${version}</span>
