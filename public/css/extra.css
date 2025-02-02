@@ -448,6 +448,10 @@ small .dropdown a:focus, small .dropdown a:hover {
     content: " ";
 }
 
+.markdown-body li p {
+    display: inline;
+}
+
 .markdown-body ol ol {
     counter-reset: subitem;
 }
