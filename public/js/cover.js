@@ -78,7 +78,7 @@ setloginStateChangeEvent(pageInit)
 
 pageInit()
 
-function pageInit () {
+function pageInit() {
   checkIfAuth(
     data => {
       $('.ui-signin').hide()
@@ -128,7 +128,7 @@ $('.ui-history').click(() => {
   }
 })
 
-function checkHistoryList () {
+function checkHistoryList() {
   if ($('#history-list').children().length > 0) {
     $('.pagination').show()
     $('.ui-nohistory').hide()
@@ -144,11 +144,11 @@ function checkHistoryList () {
   }
 }
 
-function parseHistoryCallback (list, notehistory) {
+function parseHistoryCallback(list, notehistory) {
   checkHistoryList()
   // sort by pinned then timestamp
   list.sort('', {
-    sortFunction (a, b) {
+    sortFunction(a, b) {
       const notea = a.values()
       const noteb = b.values()
       if (notea.pinned && !noteb.pinned) {
@@ -218,7 +218,7 @@ historyList.on('updated', e => {
   $('.ui-history-pin').on('click', historyPinClick)
 })
 
-function historyCloseClick (e) {
+function historyCloseClick(e) {
   e.preventDefault()
   const id = $(this).closest('a').siblings('span').html()
   const value = historyList.get('id', id)[0]._values
@@ -228,7 +228,7 @@ function historyCloseClick (e) {
   deleteId = id
 }
 
-function historyPinClick (e) {
+function historyPinClick(e) {
   e.preventDefault()
   const $this = $(this)
   const id = $this.closest('a').siblings('span').html()
@@ -267,7 +267,7 @@ function historyPinClick (e) {
 // auto update item fromNow every minutes
 setInterval(updateItemFromNow, 60000)
 
-function updateItemFromNow () {
+function updateItemFromNow() {
   const items = $('.item').toArray()
   for (let i = 0; i < items.length; i++) {
     const item = $(items[i])
@@ -279,7 +279,7 @@ function updateItemFromNow () {
 let clearHistory = false
 let deleteId = null
 
-function deleteHistory () {
+function deleteHistory() {
   checkIfAuth(() => {
     deleteServerHistory(deleteId, (err, result) => {
       if (!err) {
@@ -398,7 +398,7 @@ let filtertags = []
 $('.ui-use-tags').select2({
   placeholder: $('.ui-use-tags').attr('placeholder'),
   multiple: true,
-  data () {
+  data() {
     return {
       results: filtertags
     }
@@ -407,7 +407,7 @@ $('.ui-use-tags').select2({
 $('.select2-input').css('width', 'inherit')
 buildTagsFilter([])
 
-function buildTagsFilter (tags) {
+function buildTagsFilter(tags) {
   for (let i = 0; i < tags.length; i++) {
     tags[i] = {
       id: i,
