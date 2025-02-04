@@ -422,7 +422,7 @@ small .dropdown a:focus, small .dropdown a:hover {
 /* 自定义列表样式 */
 .markdown-body ol {
     list-style-type: none;
-    counter-reset: item;
+    /* counter-reset: item; */
     margin-left: 0;
     padding-left: 0;
 }
@@ -434,8 +434,8 @@ small .dropdown a:focus, small .dropdown a:hover {
 }
 
 .markdown-body ol > li:before {
-    content: counter(item) ")";
-    counter-increment: item;
+    content: attr(value) ")";
+    /* counter-increment: item; */
     /* position: absolute;
     left: 0; */
     margin-right: 0.5em;
@@ -461,7 +461,28 @@ small .dropdown a:focus, small .dropdown a:hover {
     counter-increment: subitem;
 }
 
-
 .checklist > thead tr th {
     background-color: #bdd6ee !important;
 }
+
+.markdown-body h2 {
+    text-align: center;
+}
+
+/* 添加图片阴影效果 */
+.markdown-body img {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+    max-width: 100%;
+}
+
+.markdown-body img.block {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+.markdown-body img:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
