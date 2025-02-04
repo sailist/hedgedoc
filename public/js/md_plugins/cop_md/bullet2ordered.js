@@ -15,6 +15,17 @@ function bullet2orderedPlugin(md) {
             }
         });
 
+        let li_index = 1;
+        state.tokens.forEach((token, idx, array) => {
+            if (token.type === "heading_open") {
+                li_index = 1;
+            }
+            if (token.type === 'list_item_open' && token.level === 1) {
+                token.attrSet('value', li_index);
+                li_index++;
+            }
+        });
+
         state.tokens.forEach((token, idx, array) => {
             if (token.type === 'list_item_open') {
                 // 将 bullet_list 转换为 ordered_list
