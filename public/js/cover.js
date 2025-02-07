@@ -533,7 +533,7 @@ function buildCopTreeData(flatData) {
       // 如果找不到父节点,将其添加到根节点
       const parentNode = {
         id: item.parentFileId,
-        name: item.parentFileId === 'DUPLICATED-FILE-ID' ? `FileID 重复 ` : `未知 COP `,
+        name: item.parentFileId === 'DUPLICATED-FILE-ID' ? `FileID 重复` : `未知上级文件`,
         loadOnDemand: false,
         children: [node],
         metadata: {

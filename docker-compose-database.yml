@@ -1,0 +1,14 @@
+version: '3'
+services:
+  database:
+    image: postgres:13.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=hedgedoc
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=hedgedoc
+    volumes:
+      - ../database:/var/lib/postgresql/data
+    restart: always
+    network_mode: bridge
