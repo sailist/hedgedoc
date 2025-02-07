@@ -38,7 +38,7 @@ if (md.meta.cop) {
   const patch_version = md.meta.patch_version || 0
   title = `${title}-v${major_version}.${minor_version}.${patch_version}`
 }
-$('.markdown-title h1').text(title)
+$('#markdown-title h1').text(title)
 if (md.meta.type && md.meta.type === 'slide') {
   const slideOptions = {
     separator: '^(\r\n?|\n)---(\r\n?|\n)$',
